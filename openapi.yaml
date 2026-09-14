@@ -1,0 +1,1098 @@
+openapi: 3.0.3
+info:
+  title: Splitward
+  version: 0.1.0
+  description: Multi-hospital split-learning control plane that trains shared nets without raw patient
+    exchange.
+  x-product-slug: ai-decentralized-splitward
+  x-source: ai-in-decentralized+ai/raskarsplitlearningmit2018-181129165110/
+servers:
+- url: https://api.example.com
+tags:
+- name: Sites
+  description: Hospital sites and capacity
+- name: Studies
+  description: Governed multi-site studies
+- name: TrainingRounds
+  description: Split/federated rounds
+- name: ContributionCredits
+  description: Site contribution ledger
+- name: Incidents
+  description: Leakage and protocol incidents
+- name: ModelReleases
+  description: Clinical validation releases
+paths:
+  /v1/sites:
+    get:
+      operationId: listSites
+      tags:
+      - Sites
+      summary: List Site
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEnvelopeSite'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: registerSite
+      tags:
+      - Sites
+      summary: Create Site
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeSite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/sites/{siteId}:
+    parameters:
+    - $ref: '#/components/parameters/SiteId'
+    get:
+      operationId: getSite
+      tags:
+      - Sites
+      summary: Get Site
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeSite'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/studies:
+    get:
+      operationId: listStudies
+      tags:
+      - Studies
+      summary: List Study
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEnvelopeStudy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createStudy
+      tags:
+      - Studies
+      summary: Create Study
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeStudy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/studies/{studyId}:
+    parameters:
+    - $ref: '#/components/parameters/StudyId'
+    get:
+      operationId: getStudy
+      tags:
+      - Studies
+      summary: Get Study
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeStudy'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/studies/{studyId}/approve-privacy:
+    parameters:
+    - $ref: '#/components/parameters/StudyId'
+    post:
+      operationId: approveStudyPrivacy
+      tags:
+      - Studies
+      summary: Privacy officer approval
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeStudy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /v1/training-rounds:
+    get:
+      operationId: listTrainingRounds
+      tags:
+      - TrainingRounds
+      summary: List TrainingRound
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEnvelopeTrainingRound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: startTrainingRound
+      tags:
+      - TrainingRounds
+      summary: Create TrainingRound
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainingRoundCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeTrainingRound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/training-rounds/{roundId}:
+    parameters:
+    - $ref: '#/components/parameters/RoundId'
+    get:
+      operationId: getTrainingRound
+      tags:
+      - TrainingRounds
+      summary: Get TrainingRound
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeTrainingRound'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/contribution-credits:
+    get:
+      operationId: listContributionCredits
+      tags:
+      - ContributionCredits
+      summary: List ContributionCredit
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEnvelopeContributionCredit'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: recordContributionCredit
+      tags:
+      - ContributionCredits
+      summary: Create ContributionCredit
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributionCreditCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeContributionCredit'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/contribution-credits/{creditId}:
+    parameters:
+    - $ref: '#/components/parameters/CreditId'
+    get:
+      operationId: getContributionCredit
+      tags:
+      - ContributionCredits
+      summary: Get ContributionCredit
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeContributionCredit'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/incidents:
+    get:
+      operationId: listIncidents
+      tags:
+      - Incidents
+      summary: List Incident
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEnvelopeIncident'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: openIncident
+      tags:
+      - Incidents
+      summary: Create Incident
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeIncident'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/incidents/{incidentId}:
+    parameters:
+    - $ref: '#/components/parameters/IncidentId'
+    get:
+      operationId: getIncident
+      tags:
+      - Incidents
+      summary: Get Incident
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeIncident'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/incidents/{incidentId}/halt-study:
+    parameters:
+    - $ref: '#/components/parameters/IncidentId'
+    post:
+      operationId: haltStudyForIncident
+      tags:
+      - Incidents
+      summary: Halt study on incident
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeIncident'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /v1/model-releases:
+    get:
+      operationId: listModelReleases
+      tags:
+      - ModelReleases
+      summary: List ModelRelease
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEnvelopeModelRelease'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createModelRelease
+      tags:
+      - ModelReleases
+      summary: Create ModelRelease
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelReleaseCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeModelRelease'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/model-releases/{releaseId}:
+    parameters:
+    - $ref: '#/components/parameters/ReleaseId'
+    get:
+      operationId: getModelRelease
+      tags:
+      - ModelReleases
+      summary: Get ModelRelease
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeModelRelease'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/model-releases/{releaseId}/clinical-signoff:
+    parameters:
+    - $ref: '#/components/parameters/ReleaseId'
+    post:
+      operationId: signOffModelRelease
+      tags:
+      - ModelReleases
+      summary: Clinician production sign-off
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataEnvelopeModelRelease'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+    SiteId:
+      name: siteId
+      in: path
+      required: true
+      schema:
+        type: string
+    StudyId:
+      name: studyId
+      in: path
+      required: true
+      schema:
+        type: string
+    RoundId:
+      name: roundId
+      in: path
+      required: true
+      schema:
+        type: string
+    CreditId:
+      name: creditId
+      in: path
+      required: true
+      schema:
+        type: string
+    IncidentId:
+      name: incidentId
+      in: path
+      required: true
+      schema:
+        type: string
+    ReleaseId:
+      name: releaseId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    BadRequest:
+      description: Bad request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Conflict:
+      description: Conflict
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    ResponseMeta:
+      type: object
+      required:
+      - requestId
+      - timestamp
+      properties:
+        requestId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+    Site:
+      type: object
+      required:
+      - id
+      - name
+      - status
+      - maxGpu
+      - maxEgressMbps
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - paused
+          - offboarded
+        maxGpu:
+          type: integer
+        maxEgressMbps:
+          type: integer
+    SiteCreate:
+      type: object
+      required:
+      - name
+      - status
+      - maxGpu
+      - maxEgressMbps
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - paused
+          - offboarded
+        maxGpu:
+          type: integer
+        maxEgressMbps:
+          type: integer
+    DataEnvelopeSite:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/Site'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ListEnvelopeSite:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - items
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Site'
+            nextCursor:
+              type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    Study:
+      type: object
+      required:
+      - id
+      - title
+      - strategy
+      - status
+      - privacyApprovalStatus
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        strategy:
+          type: string
+          enum:
+          - split
+          - federated
+          - hybrid
+        status:
+          type: string
+          enum:
+          - draft
+          - approved
+          - running
+          - halted
+          - completed
+        privacyApprovalStatus:
+          type: string
+          enum:
+          - pending
+          - approved
+          - rejected
+        activationTtlHours:
+          type: integer
+    StudyCreate:
+      type: object
+      required:
+      - title
+      - strategy
+      properties:
+        title:
+          type: string
+        strategy:
+          type: string
+          enum:
+          - split
+          - federated
+          - hybrid
+        status:
+          type: string
+          enum:
+          - draft
+          - approved
+          - running
+          - halted
+          - completed
+        privacyApprovalStatus:
+          type: string
+          enum:
+          - pending
+          - approved
+          - rejected
+        activationTtlHours:
+          type: integer
+    DataEnvelopeStudy:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/Study'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ListEnvelopeStudy:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - items
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Study'
+            nextCursor:
+              type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    TrainingRound:
+      type: object
+      required:
+      - id
+      - studyId
+      - roundNumber
+      - status
+      - sitesExpected
+      - sitesCompleted
+      properties:
+        id:
+          type: string
+        studyId:
+          type: string
+        roundNumber:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - running
+          - succeeded
+          - partial
+          - failed
+          - halted
+        sitesExpected:
+          type: integer
+        sitesCompleted:
+          type: integer
+        stragglerTimeoutSec:
+          type: integer
+    TrainingRoundCreate:
+      type: object
+      required:
+      - studyId
+      - roundNumber
+      - sitesExpected
+      - stragglerTimeoutSec
+      properties:
+        studyId:
+          type: string
+        roundNumber:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - running
+          - succeeded
+          - partial
+          - failed
+          - halted
+        sitesExpected:
+          type: integer
+        sitesCompleted:
+          type: integer
+        stragglerTimeoutSec:
+          type: integer
+    DataEnvelopeTrainingRound:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/TrainingRound'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ListEnvelopeTrainingRound:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - items
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/TrainingRound'
+            nextCursor:
+              type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ContributionCredit:
+      type: object
+      required:
+      - id
+      - studyId
+      - siteId
+      - roundsCompleted
+      - dataVolumeClass
+      properties:
+        id:
+          type: string
+        studyId:
+          type: string
+        siteId:
+          type: string
+        roundsCompleted:
+          type: integer
+        dataVolumeClass:
+          type: string
+          enum:
+          - S
+          - M
+          - L
+          - XL
+        creditPoints:
+          type: number
+    ContributionCreditCreate:
+      type: object
+      required:
+      - studyId
+      - siteId
+      - roundsCompleted
+      - dataVolumeClass
+      properties:
+        studyId:
+          type: string
+        siteId:
+          type: string
+        roundsCompleted:
+          type: integer
+        dataVolumeClass:
+          type: string
+          enum:
+          - S
+          - M
+          - L
+          - XL
+        creditPoints:
+          type: number
+    DataEnvelopeContributionCredit:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/ContributionCredit'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ListEnvelopeContributionCredit:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - items
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContributionCredit'
+            nextCursor:
+              type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    Incident:
+      type: object
+      required:
+      - id
+      - studyId
+      - incidentType
+      - severity
+      - status
+      properties:
+        id:
+          type: string
+        studyId:
+          type: string
+        incidentType:
+          type: string
+          enum:
+          - suspectedLeakage
+          - protocolViolation
+          - egressBreach
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+        status:
+          type: string
+          enum:
+          - open
+          - quarantined
+          - closed
+        detail:
+          type: string
+    IncidentCreate:
+      type: object
+      required:
+      - studyId
+      - incidentType
+      - severity
+      - detail
+      properties:
+        studyId:
+          type: string
+        incidentType:
+          type: string
+          enum:
+          - suspectedLeakage
+          - protocolViolation
+          - egressBreach
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+        status:
+          type: string
+          enum:
+          - open
+          - quarantined
+          - closed
+        detail:
+          type: string
+    DataEnvelopeIncident:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/Incident'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ListEnvelopeIncident:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - items
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Incident'
+            nextCursor:
+              type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ModelRelease:
+      type: object
+      required:
+      - id
+      - studyId
+      - version
+      - status
+      properties:
+        id:
+          type: string
+        studyId:
+          type: string
+        version:
+          type: string
+        status:
+          type: string
+          enum:
+          - candidate
+          - clinicallyApproved
+          - rejected
+          - production
+        clinicianSignOffBy:
+          type: string
+    ModelReleaseCreate:
+      type: object
+      required:
+      - studyId
+      - version
+      properties:
+        studyId:
+          type: string
+        version:
+          type: string
+        status:
+          type: string
+          enum:
+          - candidate
+          - clinicallyApproved
+          - rejected
+          - production
+        clinicianSignOffBy:
+          type: string
+    DataEnvelopeModelRelease:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/ModelRelease'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+    ListEnvelopeModelRelease:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: object
+          required:
+          - items
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ModelRelease'
+            nextCursor:
+              type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
