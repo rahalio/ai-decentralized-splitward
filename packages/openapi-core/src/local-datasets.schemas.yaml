@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: LocalDataset schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    DatasetId:
+      type: string
+      pattern: '^lds_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed LocalDataset id.
+
+    LocalDataset:
+      type: object
+      required:
+        - datasetId
+        - siteId
+        - handle
+        - labelStatus
+      properties:
+        datasetId:
+          $ref: '#/components/schemas/DatasetId'
+        siteId:
+          type: string
+        handle:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Local handle only — never raw PHI.
+        labelStatus:
+          type: string
+          enum: [unlabelled, inProgress, complete]
+        recordCountClass:
+          type: string
+          enum: [S, M, L, XL]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LocalDatasetCreateRequest:
+      type: object
+      required:
+        - siteId
+        - handle
+      properties:
+        siteId:
+          type: string
+        handle:
+          type: string
+          minLength: 1
+          maxLength: 500
+        labelStatus:
+          type: string
+          enum: [unlabelled, inProgress, complete]
+        recordCountClass:
+          type: string
+          enum: [S, M, L, XL]
+
+    LocalDatasetListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalDataset'
+        nextCursor:
+          type: string
+
+    LocalDatasetResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/LocalDataset'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    LocalDatasetListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/LocalDatasetListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

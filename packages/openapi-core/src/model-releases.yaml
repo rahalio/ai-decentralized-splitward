@@ -1,0 +1,130 @@
+openapi: 3.1.0
+info:
+  title: Model Releases API
+  version: 0.1.0
+  description: |
+    Clinical validation gate before production (BR-6).
+  license:
+    name: Proprietary
+  x-domain: rel
+servers:
+  - url: https://api.splitward.local
+    description: Local / Splitward API
+security:
+  - apiKey: []
+  - bearerAuth: []
+tags:
+  - name: ModelReleases
+    description: Clinical validation releases
+paths:
+  /v0/tenants/me/model-releases:
+    get:
+      operationId: listModelReleases
+      tags: [ModelReleases]
+      summary: List ModelReleases
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/Cursor
+        - $ref: ./common/parameters.yaml#/components/parameters/Limit
+      responses:
+        '200':
+          description: ModelRelease list
+          content:
+            application/json:
+              schema:
+                $ref: ./model-releases.schemas.yaml#/components/schemas/ModelReleaseListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: createModelRelease
+      tags: [ModelReleases]
+      summary: Create ModelRelease
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./model-releases.schemas.yaml#/components/schemas/ModelReleaseCreateRequest
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./model-releases.schemas.yaml#/components/schemas/ModelReleaseResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '409':
+          $ref: ./common/responses.yaml#/components/responses/Conflict
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+  /v0/tenants/me/model-releases/{releaseId}:
+    get:
+      operationId: getModelRelease
+      tags: [ModelReleases]
+      summary: Get ModelRelease
+      parameters:
+        - name: releaseId
+          in: path
+          required: true
+          schema:
+            $ref: ./model-releases.schemas.yaml#/components/schemas/ReleaseId
+      responses:
+        '200':
+          description: ModelRelease
+          content:
+            application/json:
+              schema:
+                $ref: ./model-releases.schemas.yaml#/components/schemas/ModelReleaseResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v0/tenants/me/model-releases/{releaseId}/clinical-signoff:
+    post:
+      operationId: clinicalSignOffModelRelease
+      tags: [ModelReleases]
+      summary: Clinician production eligibility sign-off
+      x-repository: none
+      parameters:
+        - name: releaseId
+          in: path
+          required: true
+          schema:
+            $ref: ./model-releases.schemas.yaml#/components/schemas/ReleaseId
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: ./model-releases.schemas.yaml#/components/schemas/ModelReleaseClinicalSignOffRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./model-releases.schemas.yaml#/components/schemas/ModelReleaseResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey
+    bearerAuth:
+      $ref: ./common/security.yaml#/components/securitySchemes/bearerAuth

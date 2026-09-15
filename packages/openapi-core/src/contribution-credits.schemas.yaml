@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: ContributionCredit schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    CreditId:
+      type: string
+      pattern: '^crd_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed ContributionCredit id.
+
+    ContributionCredit:
+      type: object
+      required:
+        - creditId
+        - studyId
+        - siteId
+        - roundsCompleted
+        - dataVolumeClass
+      properties:
+        creditId:
+          $ref: '#/components/schemas/CreditId'
+        studyId:
+          type: string
+        siteId:
+          type: string
+        roundsCompleted:
+          type: integer
+          minimum: 0
+        dataVolumeClass:
+          type: string
+          enum: [S, M, L, XL]
+        creditPoints:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    ContributionCreditCreateRequest:
+      type: object
+      required:
+        - studyId
+        - siteId
+        - roundsCompleted
+        - dataVolumeClass
+      properties:
+        studyId:
+          type: string
+        siteId:
+          type: string
+        roundsCompleted:
+          type: integer
+          minimum: 0
+        dataVolumeClass:
+          type: string
+          enum: [S, M, L, XL]
+        creditPoints:
+          type: number
+
+    ContributionCreditListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributionCredit'
+        nextCursor:
+          type: string
+
+    ContributionCreditResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/ContributionCredit'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    ContributionCreditListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/ContributionCreditListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

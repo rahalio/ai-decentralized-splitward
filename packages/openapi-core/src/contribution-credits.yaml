@@ -1,0 +1,96 @@
+openapi: 3.1.0
+info:
+  title: Contribution Credits API
+  version: 0.1.0
+  description: |
+    Append-only site contribution fairness ledger (BR-7).
+  license:
+    name: Proprietary
+  x-domain: crd
+servers:
+  - url: https://api.splitward.local
+    description: Local / Splitward API
+security:
+  - apiKey: []
+  - bearerAuth: []
+tags:
+  - name: ContributionCredits
+    description: Site contribution ledger
+paths:
+  /v0/tenants/me/contribution-credits:
+    get:
+      operationId: listContributionCredits
+      tags: [ContributionCredits]
+      summary: List ContributionCredits
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/Cursor
+        - $ref: ./common/parameters.yaml#/components/parameters/Limit
+      responses:
+        '200':
+          description: ContributionCredit list
+          content:
+            application/json:
+              schema:
+                $ref: ./contribution-credits.schemas.yaml#/components/schemas/ContributionCreditListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: recordContributionCredit
+      tags: [ContributionCredits]
+      summary: Create ContributionCredit
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./contribution-credits.schemas.yaml#/components/schemas/ContributionCreditCreateRequest
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./contribution-credits.schemas.yaml#/components/schemas/ContributionCreditResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '409':
+          $ref: ./common/responses.yaml#/components/responses/Conflict
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+  /v0/tenants/me/contribution-credits/{creditId}:
+    get:
+      operationId: getContributionCredit
+      tags: [ContributionCredits]
+      summary: Get ContributionCredit
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            $ref: ./contribution-credits.schemas.yaml#/components/schemas/CreditId
+      responses:
+        '200':
+          description: ContributionCredit
+          content:
+            application/json:
+              schema:
+                $ref: ./contribution-credits.schemas.yaml#/components/schemas/ContributionCreditResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey
+    bearerAuth:
+      $ref: ./common/security.yaml#/components/securitySchemes/bearerAuth

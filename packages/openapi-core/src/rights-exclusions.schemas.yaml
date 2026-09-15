@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: RightsExclusion schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    ExclusionId:
+      type: string
+      pattern: '^rex_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed RightsExclusion id.
+
+    RightsExclusion:
+      type: object
+      required:
+        - exclusionId
+        - siteId
+        - status
+        - reason
+      properties:
+        exclusionId:
+          $ref: '#/components/schemas/ExclusionId'
+        siteId:
+          type: string
+        studyId:
+          type: string
+        status:
+          type: string
+          enum: [requested, applied, attested]
+        reason:
+          type: string
+          maxLength: 2000
+        attestedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    RightsExclusionCreateRequest:
+      type: object
+      required:
+        - siteId
+        - reason
+      properties:
+        siteId:
+          type: string
+        studyId:
+          type: string
+        reason:
+          type: string
+          maxLength: 2000
+
+    RightsExclusionListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RightsExclusion'
+        nextCursor:
+          type: string
+
+    RightsExclusionResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/RightsExclusion'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    RightsExclusionListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/RightsExclusionListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    RightsExclusionAttestRequest:
+      type: object
+      properties:
+        attestationNote:
+          type: string
+          maxLength: 2000

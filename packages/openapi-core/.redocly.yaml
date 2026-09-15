@@ -1,0 +1,38 @@
+apis:
+  identity:
+    root: src/identity.yaml
+  sites:
+    root: src/sites.yaml
+  studies:
+    root: src/studies.yaml
+  training-rounds:
+    root: src/training-rounds.yaml
+  contribution-credits:
+    root: src/contribution-credits.yaml
+  incidents:
+    root: src/incidents.yaml
+  model-releases:
+    root: src/model-releases.yaml
+  local-datasets:
+    root: src/local-datasets.yaml
+  rights-exclusions:
+    root: src/rights-exclusions.yaml
+  audit-packs:
+    root: src/audit-packs.yaml
+
+extends:
+  - recommended
+
+rules:
+  no-unused-components: off
+  operation-4xx-response: warn
+  info-license: off
+  info-license-url: off
+  tag-description: off
+  operation-operationId: error
+  no-invalid-media-type-examples: off
+
+theme:
+  openapi:
+    generateCodeSamples:
+      languages: []

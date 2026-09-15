@@ -1,0 +1,136 @@
+openapi: 3.1.0
+info:
+  title: Study schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    StudyId:
+      type: string
+      pattern: '^stu_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed Study id.
+
+    Study:
+      type: object
+      required:
+        - studyId
+        - title
+        - strategy
+        - status
+        - privacyApprovalStatus
+      properties:
+        studyId:
+          $ref: '#/components/schemas/StudyId'
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        strategy:
+          type: string
+          enum: [split, federated, hybrid]
+        status:
+          type: string
+          enum: [draft, pendingPrivacy, approved, running, halted, completed]
+        privacyApprovalStatus:
+          type: string
+          enum: [pending, approved, rejected]
+        activationTtlHours:
+          type: integer
+          minimum: 1
+        participantSiteIds:
+          type: array
+          items:
+            type: string
+        marketHookEnabled:
+          type: boolean
+          description: BR-12 commercial hook; still forbids raw exchange.
+        purpose:
+          type: string
+          maxLength: 2000
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    StudyCreateRequest:
+      type: object
+      required:
+        - title
+        - strategy
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        strategy:
+          type: string
+          enum: [split, federated, hybrid]
+        activationTtlHours:
+          type: integer
+          minimum: 1
+        participantSiteIds:
+          type: array
+          items:
+            type: string
+        marketHookEnabled:
+          type: boolean
+        purpose:
+          type: string
+          maxLength: 2000
+
+    StudyListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Study'
+        nextCursor:
+          type: string
+
+    StudyResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Study'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    StudyListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/StudyListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    StudyApprovePrivacyRequest:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum: [approved, rejected]
+        reason:
+          type: string
+          maxLength: 2000
+      required:
+        - decision
+
+    StudySubmitPrivacyRequest:
+      type: object
+      properties:
+        ethicsRefs:
+          type: array
+          items:
+            type: string
+        notes:
+          type: string
+          maxLength: 2000

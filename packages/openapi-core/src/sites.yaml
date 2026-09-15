@@ -1,0 +1,96 @@
+openapi: 3.1.0
+info:
+  title: Sites API
+  version: 0.1.0
+  description: |
+    Hospital sites and declared capacity envelopes (BR-2).
+  license:
+    name: Proprietary
+  x-domain: sit
+servers:
+  - url: https://api.splitward.local
+    description: Local / Splitward API
+security:
+  - apiKey: []
+  - bearerAuth: []
+tags:
+  - name: Sites
+    description: Hospital sites and capacity envelopes
+paths:
+  /v0/tenants/me/sites:
+    get:
+      operationId: listSites
+      tags: [Sites]
+      summary: List Sites
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/Cursor
+        - $ref: ./common/parameters.yaml#/components/parameters/Limit
+      responses:
+        '200':
+          description: Site list
+          content:
+            application/json:
+              schema:
+                $ref: ./sites.schemas.yaml#/components/schemas/SiteListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: registerSite
+      tags: [Sites]
+      summary: Create Site
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./sites.schemas.yaml#/components/schemas/SiteCreateRequest
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./sites.schemas.yaml#/components/schemas/SiteResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '409':
+          $ref: ./common/responses.yaml#/components/responses/Conflict
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+  /v0/tenants/me/sites/{siteId}:
+    get:
+      operationId: getSite
+      tags: [Sites]
+      summary: Get Site
+      parameters:
+        - name: siteId
+          in: path
+          required: true
+          schema:
+            $ref: ./sites.schemas.yaml#/components/schemas/SiteId
+      responses:
+        '200':
+          description: Site
+          content:
+            application/json:
+              schema:
+                $ref: ./sites.schemas.yaml#/components/schemas/SiteResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey
+    bearerAuth:
+      $ref: ./common/security.yaml#/components/securitySchemes/bearerAuth

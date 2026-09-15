@@ -1,0 +1,96 @@
+openapi: 3.1.0
+info:
+  title: Audit Packs API
+  version: 0.1.0
+  description: |
+    No-raw-export evidence packs for a study period (BR-9).
+  license:
+    name: Proprietary
+  x-domain: aud
+servers:
+  - url: https://api.splitward.local
+    description: Local / Splitward API
+security:
+  - apiKey: []
+  - bearerAuth: []
+tags:
+  - name: AuditPacks
+    description: No-raw-export audit packs
+paths:
+  /v0/tenants/me/audit-packs:
+    get:
+      operationId: listAuditPacks
+      tags: [AuditPacks]
+      summary: List AuditPacks
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/Cursor
+        - $ref: ./common/parameters.yaml#/components/parameters/Limit
+      responses:
+        '200':
+          description: AuditPack list
+          content:
+            application/json:
+              schema:
+                $ref: ./audit-packs.schemas.yaml#/components/schemas/AuditPackListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: generateAuditPack
+      tags: [AuditPacks]
+      summary: Create AuditPack
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./audit-packs.schemas.yaml#/components/schemas/AuditPackCreateRequest
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./audit-packs.schemas.yaml#/components/schemas/AuditPackResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '409':
+          $ref: ./common/responses.yaml#/components/responses/Conflict
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+  /v0/tenants/me/audit-packs/{packId}:
+    get:
+      operationId: getAuditPack
+      tags: [AuditPacks]
+      summary: Get AuditPack
+      parameters:
+        - name: packId
+          in: path
+          required: true
+          schema:
+            $ref: ./audit-packs.schemas.yaml#/components/schemas/PackId
+      responses:
+        '200':
+          description: AuditPack
+          content:
+            application/json:
+              schema:
+                $ref: ./audit-packs.schemas.yaml#/components/schemas/AuditPackResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey
+    bearerAuth:
+      $ref: ./common/security.yaml#/components/securitySchemes/bearerAuth

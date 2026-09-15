@@ -1,0 +1,90 @@
+openapi: 3.1.0
+info:
+  title: AuditPack schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    PackId:
+      type: string
+      pattern: '^aud_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed AuditPack id.
+
+    AuditPack:
+      type: object
+      required:
+        - packId
+        - studyId
+        - periodStart
+        - periodEnd
+        - status
+      properties:
+        packId:
+          $ref: '#/components/schemas/PackId'
+        studyId:
+          type: string
+        periodStart:
+          type: string
+          format: date-time
+        periodEnd:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, complete, incomplete]
+        packHash:
+          type: string
+        siteAttestationCount:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+
+    AuditPackCreateRequest:
+      type: object
+      required:
+        - studyId
+        - periodStart
+        - periodEnd
+      properties:
+        studyId:
+          type: string
+        periodStart:
+          type: string
+          format: date-time
+        periodEnd:
+          type: string
+          format: date-time
+
+    AuditPackListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditPack'
+        nextCursor:
+          type: string
+
+    AuditPackResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/AuditPack'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    AuditPackListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/AuditPackListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

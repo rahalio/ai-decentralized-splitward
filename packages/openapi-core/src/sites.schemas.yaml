@@ -1,0 +1,96 @@
+openapi: 3.1.0
+info:
+  title: Site schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    SiteId:
+      type: string
+      pattern: '^sit_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed Site id.
+
+    Site:
+      type: object
+      required:
+        - siteId
+        - name
+        - status
+        - maxGpu
+        - maxEgressMbps
+      properties:
+        siteId:
+          $ref: '#/components/schemas/SiteId'
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        status:
+          type: string
+          enum: [active, paused, offboarded]
+        maxGpu:
+          type: integer
+          minimum: 0
+        maxEgressMbps:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    SiteCreateRequest:
+      type: object
+      required:
+        - name
+        - status
+        - maxGpu
+        - maxEgressMbps
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        status:
+          type: string
+          enum: [active, paused, offboarded]
+        maxGpu:
+          type: integer
+          minimum: 0
+        maxEgressMbps:
+          type: integer
+          minimum: 0
+
+    SiteListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Site'
+        nextCursor:
+          type: string
+
+    SiteResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Site'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    SiteListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/SiteListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

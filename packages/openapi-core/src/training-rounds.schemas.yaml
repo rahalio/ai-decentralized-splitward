@@ -1,0 +1,104 @@
+openapi: 3.1.0
+info:
+  title: TrainingRound schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    RoundId:
+      type: string
+      pattern: '^rnd_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed TrainingRound id.
+
+    TrainingRound:
+      type: object
+      required:
+        - roundId
+        - studyId
+        - roundNumber
+        - status
+        - sitesExpected
+        - sitesCompleted
+        - stragglerTimeoutSec
+      properties:
+        roundId:
+          $ref: '#/components/schemas/RoundId'
+        studyId:
+          type: string
+        roundNumber:
+          type: integer
+          minimum: 1
+        status:
+          type: string
+          enum: [pending, running, succeeded, partial, failed, halted]
+        sitesExpected:
+          type: integer
+          minimum: 1
+        sitesCompleted:
+          type: integer
+          minimum: 0
+        stragglerTimeoutSec:
+          type: integer
+          minimum: 1
+        partialAggregationAllowed:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TrainingRoundCreateRequest:
+      type: object
+      required:
+        - studyId
+        - roundNumber
+        - sitesExpected
+        - stragglerTimeoutSec
+      properties:
+        studyId:
+          type: string
+        roundNumber:
+          type: integer
+          minimum: 1
+        sitesExpected:
+          type: integer
+          minimum: 1
+        stragglerTimeoutSec:
+          type: integer
+          minimum: 1
+        partialAggregationAllowed:
+          type: boolean
+
+    TrainingRoundListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrainingRound'
+        nextCursor:
+          type: string
+
+    TrainingRoundResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/TrainingRound'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    TrainingRoundListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/TrainingRoundListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

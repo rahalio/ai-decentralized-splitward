@@ -1,0 +1,18 @@
+{
+  "name": "@splitward/openapi-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpenAPI contracts for Splitward (common + product domains)",
+  "scripts": {
+    "lint:domains": "redocly lint",
+    "bundle:domains": "mkdir -p src/.bundled && redocly bundle identity --output src/.bundled/identity.openapi.yaml && redocly bundle identity --output src/.bundled/identity.json && redocly bundle sites --output src/.bundled/sites.openapi.yaml && redocly bundle sites --output src/.bundled/sites.json && redocly bundle studies --output src/.bundled/studies.openapi.yaml && redocly bundle studies --output src/.bundled/studies.json && redocly bundle training-rounds --output src/.bundled/training-rounds.openapi.yaml && redocly bundle training-rounds --output src/.bundled/training-rounds.json && redocly bundle contribution-credits --output src/.bundled/contribution-credits.openapi.yaml && redocly bundle contribution-credits --output src/.bundled/contribution-credits.json && redocly bundle incidents --output src/.bundled/incidents.openapi.yaml && redocly bundle incidents --output src/.bundled/incidents.json && redocly bundle model-releases --output src/.bundled/model-releases.openapi.yaml && redocly bundle model-releases --output src/.bundled/model-releases.json && redocly bundle local-datasets --output src/.bundled/local-datasets.openapi.yaml && redocly bundle local-datasets --output src/.bundled/local-datasets.json && redocly bundle rights-exclusions --output src/.bundled/rights-exclusions.openapi.yaml && redocly bundle rights-exclusions --output src/.bundled/rights-exclusions.json && redocly bundle audit-packs --output src/.bundled/audit-packs.openapi.yaml && redocly bundle audit-packs --output src/.bundled/audit-packs.json",
+    "lint": "pnpm run lint:domains",
+    "bundle": "pnpm run bundle:domains"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^1.34.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

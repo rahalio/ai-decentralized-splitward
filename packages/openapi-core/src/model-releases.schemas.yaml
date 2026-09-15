@@ -1,0 +1,102 @@
+openapi: 3.1.0
+info:
+  title: ModelRelease schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    ReleaseId:
+      type: string
+      pattern: '^rel_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed ModelRelease id.
+
+    ModelRelease:
+      type: object
+      required:
+        - releaseId
+        - studyId
+        - version
+        - status
+      properties:
+        releaseId:
+          $ref: '#/components/schemas/ReleaseId'
+        studyId:
+          type: string
+        version:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          enum: [candidate, clinicallyApproved, rejected, production]
+        clinicianSignOffBy:
+          type: string
+        metricsSummary:
+          type: string
+          maxLength: 4000
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ModelReleaseCreateRequest:
+      type: object
+      required:
+        - studyId
+        - version
+      properties:
+        studyId:
+          type: string
+        version:
+          type: string
+          minLength: 1
+        metricsSummary:
+          type: string
+          maxLength: 4000
+
+    ModelReleaseListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelRelease'
+        nextCursor:
+          type: string
+
+    ModelReleaseResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/ModelRelease'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    ModelReleaseListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/ModelReleaseListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    ModelReleaseClinicalSignOffRequest:
+      type: object
+      required:
+        - decision
+      properties:
+        decision:
+          type: string
+          enum: [clinicallyApproved, rejected]
+        clinicianId:
+          type: string
+        notes:
+          type: string
+          maxLength: 2000

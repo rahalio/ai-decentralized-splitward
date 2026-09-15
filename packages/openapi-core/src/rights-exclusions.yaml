@@ -1,0 +1,130 @@
+openapi: 3.1.0
+info:
+  title: Rights Exclusions API
+  version: 0.1.0
+  description: |
+    Institutional cohort opt-out from future rounds (BR-11).
+  license:
+    name: Proprietary
+  x-domain: rex
+servers:
+  - url: https://api.splitward.local
+    description: Local / Splitward API
+security:
+  - apiKey: []
+  - bearerAuth: []
+tags:
+  - name: RightsExclusions
+    description: Rights-driven local cohort exclusions
+paths:
+  /v0/tenants/me/rights-exclusions:
+    get:
+      operationId: listRightsExclusions
+      tags: [RightsExclusions]
+      summary: List RightsExclusions
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/Cursor
+        - $ref: ./common/parameters.yaml#/components/parameters/Limit
+      responses:
+        '200':
+          description: RightsExclusion list
+          content:
+            application/json:
+              schema:
+                $ref: ./rights-exclusions.schemas.yaml#/components/schemas/RightsExclusionListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: createRightsExclusion
+      tags: [RightsExclusions]
+      summary: Create RightsExclusion
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./rights-exclusions.schemas.yaml#/components/schemas/RightsExclusionCreateRequest
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./rights-exclusions.schemas.yaml#/components/schemas/RightsExclusionResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '409':
+          $ref: ./common/responses.yaml#/components/responses/Conflict
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+  /v0/tenants/me/rights-exclusions/{exclusionId}:
+    get:
+      operationId: getRightsExclusion
+      tags: [RightsExclusions]
+      summary: Get RightsExclusion
+      parameters:
+        - name: exclusionId
+          in: path
+          required: true
+          schema:
+            $ref: ./rights-exclusions.schemas.yaml#/components/schemas/ExclusionId
+      responses:
+        '200':
+          description: RightsExclusion
+          content:
+            application/json:
+              schema:
+                $ref: ./rights-exclusions.schemas.yaml#/components/schemas/RightsExclusionResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v0/tenants/me/rights-exclusions/{exclusionId}/attest:
+    post:
+      operationId: attestRightsExclusion
+      tags: [RightsExclusions]
+      summary: Attest local suppression/deletion per site policy
+      x-repository: none
+      parameters:
+        - name: exclusionId
+          in: path
+          required: true
+          schema:
+            $ref: ./rights-exclusions.schemas.yaml#/components/schemas/ExclusionId
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: ./rights-exclusions.schemas.yaml#/components/schemas/RightsExclusionAttestRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./rights-exclusions.schemas.yaml#/components/schemas/RightsExclusionResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey
+    bearerAuth:
+      $ref: ./common/security.yaml#/components/securitySchemes/bearerAuth

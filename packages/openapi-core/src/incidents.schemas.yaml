@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: Incident schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    IncidentId:
+      type: string
+      pattern: '^inc_[0-9A-HJKMNP-TV-Z]{26}$'
+      description: Prefixed Incident id.
+
+    Incident:
+      type: object
+      required:
+        - incidentId
+        - studyId
+        - incidentType
+        - severity
+        - status
+      properties:
+        incidentId:
+          $ref: '#/components/schemas/IncidentId'
+        studyId:
+          type: string
+        incidentType:
+          type: string
+          enum: [suspectedLeakage, protocolViolation, egressBreach]
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        status:
+          type: string
+          enum: [open, quarantined, closed]
+        detail:
+          type: string
+          maxLength: 4000
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    IncidentCreateRequest:
+      type: object
+      required:
+        - studyId
+        - incidentType
+        - severity
+        - detail
+      properties:
+        studyId:
+          type: string
+        incidentType:
+          type: string
+          enum: [suspectedLeakage, protocolViolation, egressBreach]
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        detail:
+          type: string
+          maxLength: 4000
+
+    IncidentListData:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+        nextCursor:
+          type: string
+
+    IncidentResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Incident'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    IncidentListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/IncidentListData'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+
+    IncidentHaltStudyRequest:
+      type: object
+      properties:
+        quarantineArtefacts:
+          type: boolean
+          default: true
+        note:
+          type: string
+          maxLength: 2000

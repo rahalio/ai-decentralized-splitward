@@ -1,0 +1,164 @@
+openapi: 3.1.0
+info:
+  title: Studies API
+  version: 0.1.0
+  description: |
+    Governed multi-site studies, strategy selection, privacy gates (BR-3, BR-4, BR-12).
+  license:
+    name: Proprietary
+  x-domain: stu
+servers:
+  - url: https://api.splitward.local
+    description: Local / Splitward API
+security:
+  - apiKey: []
+  - bearerAuth: []
+tags:
+  - name: Studies
+    description: Governed multi-site studies
+paths:
+  /v0/tenants/me/studies:
+    get:
+      operationId: listStudies
+      tags: [Studies]
+      summary: List Studys
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/Cursor
+        - $ref: ./common/parameters.yaml#/components/parameters/Limit
+      responses:
+        '200':
+          description: Study list
+          content:
+            application/json:
+              schema:
+                $ref: ./studies.schemas.yaml#/components/schemas/StudyListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: createStudy
+      tags: [Studies]
+      summary: Create Study
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./studies.schemas.yaml#/components/schemas/StudyCreateRequest
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./studies.schemas.yaml#/components/schemas/StudyResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '409':
+          $ref: ./common/responses.yaml#/components/responses/Conflict
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+  /v0/tenants/me/studies/{studyId}:
+    get:
+      operationId: getStudy
+      tags: [Studies]
+      summary: Get Study
+      parameters:
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            $ref: ./studies.schemas.yaml#/components/schemas/StudyId
+      responses:
+        '200':
+          description: Study
+          content:
+            application/json:
+              schema:
+                $ref: ./studies.schemas.yaml#/components/schemas/StudyResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v0/tenants/me/studies/{studyId}/submit-privacy:
+    post:
+      operationId: submitStudyForPrivacy
+      tags: [Studies]
+      summary: Submit study protocol for privacy approval
+      x-repository: none
+      parameters:
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            $ref: ./studies.schemas.yaml#/components/schemas/StudyId
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: ./studies.schemas.yaml#/components/schemas/StudySubmitPrivacyRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./studies.schemas.yaml#/components/schemas/StudyResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v0/tenants/me/studies/{studyId}/approve-privacy:
+    post:
+      operationId: approveStudyPrivacy
+      tags: [Studies]
+      summary: Privacy officer approve or reject protocol
+      x-repository: none
+      parameters:
+        - name: studyId
+          in: path
+          required: true
+          schema:
+            $ref: ./studies.schemas.yaml#/components/schemas/StudyId
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: ./studies.schemas.yaml#/components/schemas/StudyApprovePrivacyRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./studies.schemas.yaml#/components/schemas/StudyResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey
+    bearerAuth:
+      $ref: ./common/security.yaml#/components/securitySchemes/bearerAuth

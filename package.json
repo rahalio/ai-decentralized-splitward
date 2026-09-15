@@ -1,0 +1,37 @@
+{
+  "name": "splitward",
+  "version": "0.1.0",
+  "description": "Splitward — multi-hospital split-learning control plane (OpenAPI-first DDD)",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:openapi": "pnpm --filter @splitward/openapi-core lint:domains",
+    "bundle:openapi": "pnpm --filter @splitward/openapi-core bundle:domains",
+    "build": "pnpm --filter @splitward/core build && pnpm --filter @splitward/services build && pnpm --filter @splitward/adapters build && pnpm --filter @splitward/api-server build",
+    "dev:api": "pnpm --filter @splitward/api-server dev",
+    "codegen:core": "node scripts/sync-codegen-paths.mjs && PYTHONPATH=.codegen/codegen/src python3 -m zero_codegen.cli.main generate --all --layers core --config .codegen/.zero-codegen-merged.json --skip-build",
+    "codegen:identity": "node scripts/sync-codegen-paths.mjs && PYTHONPATH=.codegen/codegen/src python3 -m zero_codegen.cli.main generate --domain identity --config .codegen/.zero-codegen-merged.json --skip-build",
+    "codegen:paths": "node scripts/sync-codegen-paths.mjs",
+    "dev:web": "pnpm --filter @splitward/webapp dev",
+    "build:web": "pnpm --filter @splitward/webapp build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.55.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "core-js"
+    ]
+  }
+}
